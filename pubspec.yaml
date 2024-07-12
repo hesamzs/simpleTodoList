@@ -28,4 +28,5 @@ flutter:
   assets:
     - assets/images/prof.png
     - assets/svg/search_icon.svg
+    - assets/svg/calendar.svg
 

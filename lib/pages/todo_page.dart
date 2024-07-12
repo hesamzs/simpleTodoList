@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:simpletodolist/widgets/color_widget.dart';
+import 'package:simpletodolist/widgets/date_widget.dart';
 import 'package:simpletodolist/widgets/text_widget.dart';
 
+import '../model/task_model.dart';
 import '../widgets/progress_widget.dart';
 
 class TodoPage extends StatefulWidget {
@@ -13,6 +15,36 @@ class TodoPage extends StatefulWidget {
 }
 
 class _TodoPageState extends State<TodoPage> {
+  List<TaskModel> todayTasks = [
+    TaskModel(
+      title: "Title",
+      desc: "Desc",
+      sTime: "1",
+      eTime: "2",
+      priority: 1,
+      getAlert: true,
+      dateTime: DateTime.now(),
+      activeBtn: false,
+    ),
+    TaskModel(
+      title: "Title1",
+      desc: "Desc1",
+      sTime: "1",
+      eTime: "2",
+      priority: 0,
+      getAlert: true,
+      dateTime: DateTime.now(),
+      activeBtn: true,
+    ),
+  ];
+
+  double progressSize = 0.6;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,52 +61,11 @@ class _TodoPageState extends State<TodoPage> {
                 headerWidget(),
                 searchWidget(),
                 seeAllWidget("Progress"),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  decoration: BoxDecoration(
-                    color: darkGrayColor,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top: 15.0, bottom: 10),
-                        child: cText("Daily Task", "Inter"),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: cText(
-                          "2/3 Task Completed",
-                          "Inter",
-                          fontSize: 16,
-                          fontWeight: FontWeight.w300,
-                          color: lightWhite,
-                        ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          cText("You are almost done go ahead", "Inter", fontSize: 14, fontWeight: FontWeight.w100),
-                          cText(
-                            "60%",
-                            "Inter",
-                          ),
-                        ],
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(bottom: 15.0, top: 5),
-                        child: GradientProgressIndicator(
-                          textPurple,
-                          0.9,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                progressWidget(progressSize),
                 seeAllWidget("Today’s Task"),
-                seeAllWidget("Tommorrow Task"),
-                // const Spacer(),
+                taskListBuilder(todayTasks),
+                seeAllWidget("Tomorrow Task"),
+                taskListBuilder(todayTasks),
               ],
             ),
           ),
@@ -187,6 +178,125 @@ Widget seeAllWidget(String text) {
           fontSize: 14,
           fontWeight: FontWeight.w500,
           color: textPurple,
+        ),
+      ],
+    ),
+  );
+}
+
+Widget taskListBuilder(List<TaskModel> list) {
+  return ListView.builder(
+    physics: const NeverScrollableScrollPhysics(),
+    shrinkWrap: true,
+    itemCount: list.length,
+    itemBuilder: (BuildContext context, int index) {
+      TaskModel item = list[index];
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 8.0),
+        child: Container(
+          height: 80,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            color: grayColor,
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 15,
+                decoration: BoxDecoration(
+                  color: priorityColor[item.priority],
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(8),
+                    bottomLeft: Radius.circular(8),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      cText(
+                        item.title,
+                        "Inter",
+                        fontSize: 16,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 5.0),
+                        child: Row(
+                          children: [
+                            SvgPicture.asset("assets/svg/calendar.svg"),
+                            const SizedBox(width: 10),
+                            cText(
+                              "${item.dateTime.day} ${GetDate().getMonth(item.dateTime.month)}",
+                              "Inter",
+                              color: lightWhite,
+                              fontSize: 14,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Checkbox(
+                  value: item.activeBtn,
+                  onChanged: (bool? value) {},
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
+Widget progressWidget(double progressSize) {
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 16),
+    decoration: BoxDecoration(
+      color: darkGrayColor,
+      borderRadius: BorderRadius.circular(8),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 15.0, bottom: 10),
+          child: cText("Daily Task", "Inter"),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 10),
+          child: cText(
+            "2/3 Task Completed",
+            "Inter",
+            fontSize: 16,
+            fontWeight: FontWeight.w300,
+            color: lightWhite,
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            cText("You are almost done go ahead", "Inter", fontSize: 14, fontWeight: FontWeight.w200),
+            cText(
+              "${progressSize * 100}%",
+              "Inter",
+            ),
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 15.0, top: 5),
+          child: CustomProgressIndicator(
+            textPurple,
+            progressSize,
+          ),
         ),
       ],
     ),

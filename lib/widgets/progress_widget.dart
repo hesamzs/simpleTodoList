@@ -1,25 +1,22 @@
-library gradient_progress_bar;
-
 import 'package:flutter/material.dart';
 
 import 'color_widget.dart';
 
-class GradientProgressIndicator extends StatefulWidget {
+class CustomProgressIndicator extends StatefulWidget {
   final Color colors;
-
   final double value;
 
-  const GradientProgressIndicator(this.colors, this.value, {Key? key}) : super(key: key);
+  const CustomProgressIndicator(this.colors, this.value, {Key? key}) : super(key: key);
 
   @override
-  _GradientProgressIndicatorState createState() => _GradientProgressIndicatorState();
+  _CustomProgressIndicatorState createState() => _CustomProgressIndicatorState();
 }
 
-class _GradientProgressIndicatorState extends State<GradientProgressIndicator> {
+class _CustomProgressIndicatorState extends State<CustomProgressIndicator> {
   double _value = 0.0;
 
   @override
-  void didUpdateWidget(GradientProgressIndicator oldWidget) {
+  void didUpdateWidget(CustomProgressIndicator oldWidget) {
     super.didUpdateWidget(oldWidget);
     _value = widget.value;
   }
@@ -35,8 +32,8 @@ class _GradientProgressIndicatorState extends State<GradientProgressIndicator> {
           height: 18,
           width: double.infinity,
           decoration: BoxDecoration(
-            boxShadow: [
-              const BoxShadow(
+            boxShadow: const [
+              BoxShadow(
                 offset: Offset(0, 0),
                 color: grayColor,
                 blurRadius: 2,
@@ -51,7 +48,11 @@ class _GradientProgressIndicatorState extends State<GradientProgressIndicator> {
               AnimatedContainer(
                 decoration: BoxDecoration(
                   boxShadow: [
-                    BoxShadow(offset: const Offset(5, 0), color: grayColor.withOpacity(.3), blurRadius: 10,),
+                    BoxShadow(
+                      offset: const Offset(5, 0),
+                      color: grayColor.withOpacity(.3),
+                      blurRadius: 10,
+                    ),
                   ],
                 ),
                 curve: Curves.linear,
@@ -89,7 +90,9 @@ class _GradientProgressInternal extends StatelessWidget {
         width: double.infinity,
         height: _kLinearProgressIndicatorHeight,
       ),
-      decoration: BoxDecoration(color: colorsToApply),
+      decoration: BoxDecoration(
+        color: colorsToApply,
+      ),
     );
   }
 }
