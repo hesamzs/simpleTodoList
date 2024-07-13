@@ -63,13 +63,45 @@ class _TodoPageState extends State<TodoPage> {
                 seeAllWidget("Progress"),
                 progressWidget(progressSize),
                 seeAllWidget("Today’s Task"),
-                taskListBuilder(todayTasks),
+                taskListBuilder(todayTasks, context),
                 seeAllWidget("Tomorrow Task"),
-                taskListBuilder(todayTasks),
+                taskListBuilder(todayTasks, context),
               ],
             ),
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          width: 70,
+          height: 70,
+          decoration: const BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                offset: Offset(2, 2),
+                color: grayColor,
+                spreadRadius: 2,
+                blurRadius: 5,
+              ),
+            ],
+            gradient: LinearGradient(
+              colors: [
+                pinkGradiant,
+                purpleGradiant,
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            Icons.add,
+            color: grayColor,
+            size: 34,
+          ),
+        ),
+        onPressed: () {},
       ),
     );
   }
@@ -136,6 +168,7 @@ Widget searchWidget() {
             child: Padding(
               padding: EdgeInsets.only(left: 10.0, bottom: 4),
               child: TextField(
+                maxLength: 30,
                 textAlignVertical: TextAlignVertical.center,
                 style: TextStyle(
                   color: white,
@@ -143,6 +176,7 @@ Widget searchWidget() {
                 ),
                 cursorColor: Colors.white,
                 decoration: InputDecoration(
+                  counterText: "",
                   hintText: "Search Task Here",
                   hintStyle: TextStyle(
                     color: white,
@@ -184,74 +218,98 @@ Widget seeAllWidget(String text) {
   );
 }
 
-Widget taskListBuilder(List<TaskModel> list) {
-  return ListView.builder(
-    physics: const NeverScrollableScrollPhysics(),
-    shrinkWrap: true,
-    itemCount: list.length,
-    itemBuilder: (BuildContext context, int index) {
-      TaskModel item = list[index];
-      return Padding(
-        padding: const EdgeInsets.only(bottom: 8.0),
-        child: Container(
-          height: 80,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            color: grayColor,
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 15,
-                decoration: BoxDecoration(
-                  color: priorityColor[item.priority],
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(8),
-                    bottomLeft: Radius.circular(8),
-                  ),
-                ),
+Widget taskListBuilder(List<TaskModel> list, context) {
+  return StatefulBuilder(
+    builder: (BuildContext context, void Function(void Function()) setState) {
+      return ListView.builder(
+        physics: const NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        itemCount: list.length,
+        itemBuilder: (BuildContext context, int index) {
+          TaskModel item = list[index];
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: Container(
+              height: 80,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                color: grayColor,
               ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      cText(
-                        item.title,
-                        "Inter",
-                        fontSize: 16,
+              child: Row(
+                children: [
+                  Container(
+                    width: 15,
+                    decoration: BoxDecoration(
+                      color: priorityColor[item.priority],
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(8),
+                        bottomLeft: Radius.circular(8),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 5.0),
-                        child: Row(
-                          children: [
-                            SvgPicture.asset("assets/svg/calendar.svg"),
-                            const SizedBox(width: 10),
-                            cText(
-                              "${item.dateTime.day} ${GetDate().getMonth(item.dateTime.month)}",
-                              "Inter",
-                              color: lightWhite,
-                              fontSize: 14,
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          cText(
+                            item.title,
+                            "Inter",
+                            fontSize: 16,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 5.0),
+                            child: Row(
+                              children: [
+                                SvgPicture.asset("assets/svg/calendar.svg"),
+                                const SizedBox(width: 10),
+                                cText(
+                                  "${item.dateTime.day} ${GetDate().getMonth(item.dateTime.month)}",
+                                  "Inter",
+                                  color: lightWhite,
+                                  fontSize: 14,
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                    child: Transform.scale(
+                      scale: 1.3,
+                      child: Checkbox(
+                        side: MaterialStateBorderSide.resolveWith(
+                          (states) => BorderSide(
+                            color: item.activeBtn ? grayColor : textPurple,
+                            strokeAlign: StrokeAlign.outside,
+                            width: 1.3,
+                          ),
+                        ),
+                        fillColor: MaterialStateColor.resolveWith((states) => textPurple),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        visualDensity: VisualDensity.standard,
+                        checkColor: grayColor,
+                        value: item.activeBtn,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            item.activeBtn = !item.activeBtn;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Checkbox(
-                  value: item.activeBtn,
-                  onChanged: (bool? value) {},
-                ),
-              ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       );
     },
   );

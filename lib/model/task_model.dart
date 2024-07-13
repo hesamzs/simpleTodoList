@@ -15,7 +15,7 @@ class TaskModel {
   final int priority;
   final bool getAlert;
   final DateTime dateTime;
-  final bool activeBtn;
+    bool activeBtn;
 
   TaskModel({
     required this.title,
