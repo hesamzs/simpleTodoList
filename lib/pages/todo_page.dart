@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:simpletodolist/pages/add_todo_page.dart';
 import 'package:simpletodolist/widgets/color_widget.dart';
 import 'package:simpletodolist/widgets/date_widget.dart';
 import 'package:simpletodolist/widgets/text_widget.dart';
@@ -21,7 +22,7 @@ class _TodoPageState extends State<TodoPage> {
       desc: "Desc",
       sTime: "1",
       eTime: "2",
-      priority: 1,
+      priority: Priority.high,
       getAlert: true,
       dateTime: DateTime.now(),
       activeBtn: false,
@@ -31,7 +32,7 @@ class _TodoPageState extends State<TodoPage> {
       desc: "Desc1",
       sTime: "1",
       eTime: "2",
-      priority: 0,
+      priority: Priority.low,
       getAlert: true,
       dateTime: DateTime.now(),
       activeBtn: true,
@@ -95,13 +96,15 @@ class _TodoPageState extends State<TodoPage> {
             ),
             shape: BoxShape.circle,
           ),
-          child: Icon(
+          child: const Icon(
             Icons.add,
             color: grayColor,
             size: 34,
           ),
         ),
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) { return AddTodoPage(); }));
+        },
       ),
     );
   }
@@ -266,7 +269,7 @@ Widget taskListBuilder(List<TaskModel> list, context) {
                                 SvgPicture.asset("assets/svg/calendar.svg"),
                                 const SizedBox(width: 10),
                                 cText(
-                                  "${item.dateTime.day} ${GetDate().getMonth(item.dateTime.month)}",
+                                  GetDate().dateFormat(item.dateTime),
                                   "Inter",
                                   color: lightWhite,
                                   fontSize: 14,
